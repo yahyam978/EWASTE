@@ -1,3 +1,18 @@
+import qrcode
+from io import BytesIO
+from PIL import Image
+
+# GitHub raw link to your hosted PDF
+PDF_URL = "https://raw.githubusercontent.com/YourUsername/EWASTE/main/references_and_data.pdf"
+
+# Generate QR code
+qr = qrcode.make(PDF_URL)
+buf = BytesIO()
+qr.save(buf, format="PNG")
+qr_img = Image.open(buf)
+
+# Display QR code in the top-right corner
+st.sidebar.image(qr_img, caption="📄 References & Data PDF", width=150)
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
