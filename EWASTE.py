@@ -129,6 +129,7 @@ results_df = pd.DataFrame(results).set_index("Method")
 main_col, qr_col = st.columns([4, 1])
 
 with main_col:
+    st.image("image_e19dc7.png", use_column_width=True)
     st.title("E-waste: Cost & Energy Comparison — Pyro vs Hydro vs Bio vs Informal (Egypt)")
     st.markdown("Compare energy use, cost breakdown, and metal yield for Au, Pd, Cu using different recycling methods.")
 
@@ -187,3 +188,4 @@ with col4:
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     st.pyplot(fig)
+
