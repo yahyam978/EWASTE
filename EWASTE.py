@@ -3,7 +3,7 @@ from io import BytesIO
 from PIL import Image
 
 # GitHub raw link to your hosted PDF
-PDF_URL = "https://github.com/yahyam978/EWASTE/blob/848584bf15a13f2442a69a06561c3172fcfe93c9/references_and_data.pdf"
+PDF_URL = "https://raw.githubusercontent.com/yahyam978/EWASTE/main/references_and_data.pdf"
 
 # Generate QR code
 qr = qrcode.make(PDF_URL)
