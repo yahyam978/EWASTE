@@ -56,27 +56,48 @@ st.title("E-waste: Cost & Energy Comparison — Pyro vs Hydro vs Bio vs Informal
 st.markdown("Compare energy use, cost breakdown, and metal yield for Au, Pd, Cu using different recycling methods.")
 
 st.header("📊 Simulation Outputs")
-st.dataframe(results_df.style.highlight_min(color="lightgreen", axis=0))
+
+# Apply styling for table
+styled_df = (
+    results_df
+    .style
+    .background_gradient(subset=["Total cost ($/t)"], cmap="Blues")
+    .background_gradient(subset=["Energy (kWh/t)"], cmap="Oranges")
+    .bar(subset=["Au recovery", "Pd recovery", "Cu recovery"], color='#c2f7c2')
+    .set_properties(**{'font-size': '16px', 'font-weight': 'bold'}, subset=pd.IndexSlice[:, :])
+    .set_table_styles([
+        {'selector': 'th', 'props': [('font-size', '18px'), ('font-weight', 'bold'), ('background-color', '#f0f0f0')]}
+    ])
+)
+
+st.dataframe(styled_df, height=350)
 
 # -----------------------------
-# Charts
+# Charts - aligned in columns
 # -----------------------------
-st.subheader("⚡ Energy Consumption (kWh per ton)")
-fig, ax = plt.subplots()
-results_df["Energy (kWh/t)"].plot(kind="bar", ax=ax, color="orange")
-plt.ylabel("kWh per ton")
-st.pyplot(fig)
+st.subheader("📊 Key Comparisons")
 
-st.subheader("💰 Total Cost ($ per ton)")
-fig, ax = plt.subplots()
-results_df["Total cost ($/t)"].plot(kind="bar", ax=ax, color="blue")
-plt.ylabel("Cost ($/t)")
-st.pyplot(fig)
+col1, col2, col3 = st.columns(3)
 
-st.subheader("🔎 Metal Recovery Comparison")
-fig, ax = plt.subplots()
-results_df[["Au recovery", "Pd recovery", "Cu recovery"]].plot(kind="bar", ax=ax)
-plt.ylabel("Recovery efficiency")
-st.pyplot(fig)
+with col1:
+    st.markdown("⚡ **Energy Consumption**")
+    fig1, ax1 = plt.subplots()
+    results_df["Energy (kWh/t)"].plot(kind="bar", ax=ax1, color="orange")
+    ax1.set_ylabel("kWh per ton")
+    st.pyplot(fig1)
+
+with col2:
+    st.markdown("💰 **Total Cost**")
+    fig2, ax2 = plt.subplots()
+    results_df["Total cost ($/t)"].plot(kind="bar", ax=ax2, color="blue")
+    ax2.set_ylabel("Cost ($/t)")
+    st.pyplot(fig2)
+
+with col3:
+    st.markdown("🔎 **Metal Recovery**")
+    fig3, ax3 = plt.subplots()
+    results_df[["Au recovery", "Pd recovery", "Cu recovery"]].plot(kind="bar", ax=ax3)
+    ax3.set_ylabel("Recovery efficiency")
+    st.pyplot(fig3)
 
 st.success("✅ Simulation completed. Adjust Excel values for sensitivity analysis.")
