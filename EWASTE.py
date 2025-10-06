@@ -65,8 +65,19 @@ buf = io.BytesIO()
 qr_img.save(buf, format="PNG")
 buf.seek(0)
 
-st.header("📄 References & Data Access")
-st.image(buf, caption="Scan this QR code to open References and Data PDF", width=200)
+# Place QR code in a small column next to the title
+col_title, col_qr = st.columns([4,1])
+with col_title:
+    st.header("📄 References & Data Access")
+with col_qr:
+    st.image(buf, caption=None, width=90)
+    st.markdown(
+        "<div style='font-size:12px; text-align:center; margin-top: -5px;'>"
+        "Scan for<br>References & Data PDF"
+        "</div>",
+        unsafe_allow_html=True
+    )
+
 st.markdown(
     """
     <div style="text-align:center; margin-bottom: 15px;">
