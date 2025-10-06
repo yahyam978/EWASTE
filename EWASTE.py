@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import qrcode
+from PIL import Image
+import io
 
 # -----------------------------
 # Load Parameters from Excel
@@ -13,7 +16,7 @@ data = pd.read_excel("ewaste_parameters.xlsx", index_col=0)
 def evaluate_method(name, energy, chemicals_cost, capex, recovery):
     energy_cost = energy * 0.1   # assume $0.1 per kWh
     total_cost = chemicals_cost + capex + energy_cost
-    
+
     return {
         "Method": name,
         "Energy (kWh/t)": energy,
@@ -54,6 +57,34 @@ results_df = pd.DataFrame(results).set_index("Method")
 # -----------------------------
 st.title("E-waste: Cost & Energy Comparison — Pyro vs Hydro vs Bio vs Informal (Egypt)")
 st.markdown("Compare energy use, cost breakdown, and metal yield for Au, Pd, Cu using different recycling methods.")
+
+# --- QR code and download for references_and_data.pdf ---
+pdf_url = "https://github.com/yahyam978/EWASTE/raw/main/references_and_data.pdf"
+qr_img = qrcode.make(pdf_url)
+buf = io.BytesIO()
+qr_img.save(buf, format="PNG")
+buf.seek(0)
+
+st.header("📄 References & Data Access")
+st.image(buf, caption="Scan this QR code to open References and Data PDF", width=200)
+st.markdown(
+    """
+    <div style="text-align:center; margin-bottom: 15px;">
+        <b>This QR code gives direct access to the References & Data PDF.<br>
+        You can also download the file below.</b>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+with open("references_and_data.pdf", "rb") as f:
+    pdf_bytes = f.read()
+st.download_button(
+    label="⬇️ Download References and Data PDF",
+    data=pdf_bytes,
+    file_name="references_and_data.pdf",
+    mime="application/pdf"
+)
 
 st.header("📊 Simulation Outputs")
 
