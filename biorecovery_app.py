@@ -53,6 +53,11 @@ fig, ax = plt.subplots()
 bars = ax.bar(df["Bacteria"], df["Recovery (%)"], color=["#8dd3c7", "#bebada", "#fb8072"])
 ax.set_ylim(0, 100)
 ax.set_ylabel("Recovery (%)")
+
+# FIXED: Rotate x-labels to avoid overlap
+ax.set_xticks(range(len(df["Bacteria"])))
+ax.set_xticklabels(df["Bacteria"], rotation=20, ha="right", fontsize=10)
+
 for bar in bars:
     height = bar.get_height()
     ax.annotate(f"{height:.1f}%", xy=(bar.get_x() + bar.get_width() / 2, height),
