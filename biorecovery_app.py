@@ -19,7 +19,7 @@ def load_params():
 params_df = load_params()
 
 # ---------- QR Code for references PDF ----------
-PDF_URL = "https://raw.githubusercontent.com/YourUsername/EWASTE/main/references_and_data.pdf"
+PDF_URL = "https://raw.githubusercontent.com/yahyam978/EWASTE/main/references_and_data.pdf"
 qr = qrcode.make(PDF_URL)
 buf = BytesIO()
 qr.save(buf, format="PNG")
