@@ -65,6 +65,7 @@ qr_img = qrcode.make(pdf_url)
 buf = io.BytesIO()
 qr_img.save(buf, format="PNG")
 buf.seek(0)
+import base64
 qr_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 
 st.markdown(
@@ -72,24 +73,30 @@ st.markdown(
     <style>
     .corner-qr {{
         position: fixed;
-        top: 25px;
-        right: 30px;
+        top: 80px;   /* Move down to be below Streamlit header */
+        right: 48px; /* Move a bit left from the edge */
         z-index: 9999;
         text-align: center;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.16);
+        padding: 8px 8px 2px 8px;
     }}
     .corner-qr img {{
-        width: 100px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        width: 88px;
+        border-radius: 6px;
+        display: block;
+        margin: 0 auto;
     }}
     .corner-qr-label {{
-        font-size: 12px;
-        margin-top: -2px;
-        color: #555;
-        background: #fff9;
+        font-size: 13px;
+        margin-top: 3px;
+        color: #444;
+        background: #f5f5f5;
         border-radius: 6px;
-        padding: 2px 6px;
+        padding: 2px 8px;
         display: inline-block;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }}
     </style>
     <div class="corner-qr">
