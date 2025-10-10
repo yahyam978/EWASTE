@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import qrcode
 from PIL import Image
 import io
+import base64
 
 # -----------------------------
 # Load Parameters from Excel
@@ -58,31 +59,30 @@ results_df = pd.DataFrame(results).set_index("Method")
 st.title("E-waste: Cost & Energy Comparison — Pyro vs Hydro vs Bio vs Informal (Egypt)")
 st.markdown("Compare energy use, cost breakdown, and metal yield for Au, Pd, Cu using different recycling methods.")
 
-# --- Fixed QR code for References & Data in corner ---
-
+# --- QR code for References & Data fixed at top right corner, no download button ---
 pdf_url = "https://github.com/yahyam978/EWASTE/raw/main/references_and_data.pdf"
 qr_img = qrcode.make(pdf_url)
 buf = io.BytesIO()
 qr_img.save(buf, format="PNG")
 buf.seek(0)
+qr_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 
-# Custom HTML/CSS for fixed corner QR
 st.markdown(
-    """
+    f"""
     <style>
-    .corner-qr {
+    .corner-qr {{
         position: fixed;
         top: 25px;
         right: 30px;
         z-index: 9999;
         text-align: center;
-    }
-    .corner-qr img {
+    }}
+    .corner-qr img {{
         width: 100px;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-    }
-    .corner-qr-label {
+    }}
+    .corner-qr-label {{
         font-size: 12px;
         margin-top: -2px;
         color: #555;
@@ -90,19 +90,18 @@ st.markdown(
         border-radius: 6px;
         padding: 2px 6px;
         display: inline-block;
-    }
+    }}
     </style>
     <div class="corner-qr">
         <img src="data:image/png;base64,{qr_b64}" alt="References QR">
         <div class="corner-qr-label">References & Data PDF</div>
     </div>
-    """.format(qr_b64=Image.open(buf).tobytes().hex()),
+    """,
     unsafe_allow_html=True
 )
 
 st.header("📊 Simulation Outputs")
 
-# -- Rest of your code stays unchanged --
 # Apply styling for table
 styled_df = (
     results_df
