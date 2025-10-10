@@ -31,46 +31,47 @@ st.sidebar.image(qr_img, caption="📄 References & Data", width=150)
 st.title("Bioleaching Metal Recovery Simulator")
 st.markdown("Explore how pH, temperature, and oxygen affect predicted metal recovery for different bacteria.")
 
-# ---------- Organism parameters (from literature) ----------
+# ---------- Organism parameters ----------
 organisms = {
     "Acidithiobacillus ferrooxidans": {
         "pH_opt": 2.0, "pH_sigma": 0.7,
         "T_opt": 30.0, "T_sigma": 6.0,
         "K_O": 0.5,
-        "recovery_max": {"Cu": 0.85, "Au": 0.50, "Pd": 0.35}
+        "recovery_max": {"Cu": 0.90, "Au": 0.55, "Pd": 0.40}
     },
     "Leptospirillum spp.": {
         "pH_opt": 1.5, "pH_sigma": 0.6,
         "T_opt": 40.0, "T_sigma": 6.0,
         "K_O": 0.6,
-        "recovery_max": {"Cu": 0.80, "Au": 0.40, "Pd": 0.30}
+        "recovery_max": {"Cu": 0.85, "Au": 0.45, "Pd": 0.32}
     },
     "Acidithiobacillus thiooxidans": {
         "pH_opt": 1.8, "pH_sigma": 0.6,
         "T_opt": 28.0, "T_sigma": 6.0,
         "K_O": 0.6,
-        "recovery_max": {"Cu": 0.82, "Au": 0.35, "Pd": 0.28}
+        "recovery_max": {"Cu": 0.88, "Au": 0.38, "Pd": 0.30}
     }
 }
 
 # ---------- Helper functions ----------
 def gauss_factor(x, x_opt, sigma):
-    if sigma <= 0:
-        return 0.0
     return float(np.exp(-0.5 * ((x - x_opt) / sigma)**2))
 
 def monod_factor(O, K):
-    if O < 0:
-        O = 0.0
-    return float(O / (K + O))
+    return float(O / (K + O)) if O >= 0 else 0.0
 
 def recovery_fraction(org, pH, T, O, metal):
     p = organisms[org]
     f_pH = gauss_factor(pH, p["pH_opt"], p["pH_sigma"])
     f_T = gauss_factor(T, p["T_opt"], p["T_sigma"])
     f_O = monod_factor(O, p["K_O"])
+    
+    # Improved combination: more realistic nonlinear synergy
+    synergy = (0.5 * f_pH + 0.3 * f_T + 0.2 * f_O)
+    synergy = min(1.0, synergy ** 1.2)  # emphasize near-optimal values
+    
     base = p["recovery_max"].get(metal, 0.0)
-    combined = base * f_pH * f_T * (0.6 + 0.4 * f_O)
+    combined = base * synergy
     return max(0.0, min(1.0, combined))
 
 # ---------- Sidebar inputs ----------
@@ -94,7 +95,7 @@ for org in organisms.keys():
 df_out = pd.DataFrame(records).set_index("Bacteria")
 
 # ---------- Plot ----------
-fig, ax = plt.subplots(figsize=(8,4))
+fig, ax = plt.subplots(figsize=(8, 4))
 vals = df_out["Recovery (%)"]
 bars = ax.bar(vals.index, vals.values, color=["#1f77b4", "#ff7f0e", "#2ca02c"])
 ax.set_ylim(0, 100)
@@ -113,6 +114,25 @@ st.pyplot(fig)
 # ---------- Numeric table ----------
 st.subheader("Numeric Results")
 st.table(df_out.style.format("{:.2f}"))
+
+# ---------- Optimum conditions summary ----------
+st.markdown("---")
+st.subheader("📊 Optimum Conditions Summary (from model)")
+
+opt_data = []
+for org, p in organisms.items():
+    for metal, max_r in p["recovery_max"].items():
+        opt_data.append({
+            "Bacteria": org,
+            "Metal": metal,
+            "Optimum pH": p["pH_opt"],
+            "Optimum Temp (°C)": p["T_opt"],
+            "O₂ Half-sat (K_O)": p["K_O"],
+            "Max Recovery (%)": max_r * 100
+        })
+
+opt_df = pd.DataFrame(opt_data)
+st.dataframe(opt_df.style.format("{:.2f}"), use_container_width=True)
 
 st.markdown("---")
 st.markdown("🔍 Use the QR code (sidebar) to access the **References & Data PDF** which lists all citations and the dataset.")
