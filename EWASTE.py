@@ -58,47 +58,51 @@ results_df = pd.DataFrame(results).set_index("Method")
 st.title("E-waste: Cost & Energy Comparison — Pyro vs Hydro vs Bio vs Informal (Egypt)")
 st.markdown("Compare energy use, cost breakdown, and metal yield for Au, Pd, Cu using different recycling methods.")
 
-# --- QR code and download for references_and_data.pdf ---
+# --- Fixed QR code for References & Data in corner ---
+
 pdf_url = "https://github.com/yahyam978/EWASTE/raw/main/references_and_data.pdf"
 qr_img = qrcode.make(pdf_url)
 buf = io.BytesIO()
 qr_img.save(buf, format="PNG")
 buf.seek(0)
 
-# Place QR code in a small column next to the title
-col_title, col_qr = st.columns([4,1])
-with col_title:
-    st.header("📄 References & Data Access")
-with col_qr:
-    st.image(buf, caption=None, width=90)
-    st.markdown(
-        "<div style='font-size:12px; text-align:center; margin-top: -5px;'>"
-        "Scan for<br>References & Data PDF"
-        "</div>",
-        unsafe_allow_html=True
-    )
-
+# Custom HTML/CSS for fixed corner QR
 st.markdown(
     """
-    <div style="text-align:center; margin-bottom: 15px;">
-        <b>This QR code gives direct access to the References & Data PDF.<br>
-        You can also download the file below.</b>
+    <style>
+    .corner-qr {
+        position: fixed;
+        top: 25px;
+        right: 30px;
+        z-index: 9999;
+        text-align: center;
+    }
+    .corner-qr img {
+        width: 100px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .corner-qr-label {
+        font-size: 12px;
+        margin-top: -2px;
+        color: #555;
+        background: #fff9;
+        border-radius: 6px;
+        padding: 2px 6px;
+        display: inline-block;
+    }
+    </style>
+    <div class="corner-qr">
+        <img src="data:image/png;base64,{qr_b64}" alt="References QR">
+        <div class="corner-qr-label">References & Data PDF</div>
     </div>
-    """,
+    """.format(qr_b64=Image.open(buf).tobytes().hex()),
     unsafe_allow_html=True
-)
-
-with open("references_and_data.pdf", "rb") as f:
-    pdf_bytes = f.read()
-st.download_button(
-    label="⬇️ Download References and Data PDF",
-    data=pdf_bytes,
-    file_name="references_and_data.pdf",
-    mime="application/pdf"
 )
 
 st.header("📊 Simulation Outputs")
 
+# -- Rest of your code stays unchanged --
 # Apply styling for table
 styled_df = (
     results_df
